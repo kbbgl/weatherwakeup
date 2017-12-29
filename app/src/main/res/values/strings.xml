@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">WeatherWakeUp</string>
+    <string name="greeting">Hey there! \nLet\'s set up your first alarm!</string>
+</resources>
