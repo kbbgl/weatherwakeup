@@ -3,6 +3,7 @@ package com.inc.kobbigal.weatherwakeup;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.inc.kobbigal.weatherwakeup.MainActivity.db;
 
 /**
  * Created by Kobbi.Gal on 29/12/2017.
@@ -39,10 +41,14 @@ public class TimePickerFragment extends android.support.v4.app.DialogFragment
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-        sharedPreferences = this.getActivity().getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("time", hourOfDay + ":" + minute);
-        editor.apply();
+        String time = hourOfDay + ":" + minute;
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        db.execSQL("INSERT INTO alarms VALUES('0'," + time +",'none', 'false'," + unixTime +  ");");
+//        sharedPreferences = this.getActivity().getPreferences(MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString("time", hourOfDay + ":" + minute);
+//        editor.apply();
 
     }
 

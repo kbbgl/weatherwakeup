@@ -1,6 +1,7 @@
 package com.inc.kobbigal.weatherwakeup;
 
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
@@ -10,27 +11,54 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.Map;
 
 public class MainActivity extends android.support.v4.app.FragmentActivity {
 
     TextView greeting;
     FragmentManager fragmentManager;
     SharedPreferences sharedPreferences;
+    ListView alarmList;
+    static SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = openOrCreateDatabase("db",MODE_PRIVATE,null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS alarms(AlarmId INTEGER, AlarmTime VARCHAR,Days VARCHAR, Repeat INTEGER, InsertationUNIXTime INTEGER );");
+
         sharedPreferences = getPreferences(MODE_PRIVATE);
 
         fragmentManager = getSupportFragmentManager();
-
         greeting = findViewById(R.id.greeting);
-        showGreeting();
+        alarmList = findViewById(R.id.alarm_list);
 
-        Log.i("sp", sharedPreferences.getString("time",""));
+        /*
+        Map<String,?> keys = prefs.getAll();
+
+for(Map.Entry<String,?> entry : keys.entrySet()){
+            Log.d("map values",entry.getKey() + ": " +
+                                   entry.getValue().toString());
+ }
+         */
+
+        if (!hasAlarmsSet()) showGreeting();
+        else {
+
+            greeting.setText(sharedPreferences.getString("time", null));
+
+            Map<String, ?> keys = sharedPreferences.getAll();
+
+            for (Map.Entry<String, ?> entry : keys.entrySet()){
+                Log.i("alarms", entry.getValue().toString());
+            }
+
+        }
 
     }
 
@@ -66,5 +94,21 @@ public class MainActivity extends android.support.v4.app.FragmentActivity {
                         });
             }
         }, 2500);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                greeting.setVisibility(View.GONE);
+
+            }
+        }, 4000);
+    }
+
+    public boolean hasAlarmsSet(){
+
+        Log.i("sp",sharedPreferences.getString("time", null));
+        return sharedPreferences.getString("time", null) != null;
+
     }
 }
